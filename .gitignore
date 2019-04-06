@@ -11,6 +11,5 @@ coverage/
 
 # production
 /build
-/public
 
 package-lock\.json

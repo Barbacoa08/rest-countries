@@ -4,6 +4,5 @@ Example of using the http://restcountries.eu/ API
 
 # Important
 * Install [Node.js LTS](https://nodejs.org/)
-* Dev build and start: `npm run build`, `npm start`
-* Prod build and start: `npm run build:prod`, `npm run start:prod`
+* Build and start: `npm run build`, `npm start`
 * Run tests: `npm t`
