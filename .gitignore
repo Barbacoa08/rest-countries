@@ -1,8 +1,16 @@
-node_modules/
-dist/
+# dependencies
+/node_modules
+/.pnp
+.pnp.js
+/dist
 
+# testing
 test/unit/coverage
 test/e2e/reports
-/coverage
+coverage/
+
+# production
+/build
+/public
 
 package-lock\.json
