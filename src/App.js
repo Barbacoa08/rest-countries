@@ -46,6 +46,7 @@ class App extends Component {
     )
   }
 
+  // TODO: get a react table so we can pretty-print the names with the interesting info.
   displayIslandCountryNames() {
     const liArray = []
     this.state.islandCountries.forEach((country, index) =>
@@ -56,6 +57,7 @@ class App extends Component {
     )
   }
 
+  // TODO: get a react table so we can pretty-print the names with the interesting info.
   displayMostBorderingCountriesNames() {
     const liArray = []
     this.state.countriesWithMostBorderingCountries.forEach((country, index) =>
@@ -84,9 +86,11 @@ class App extends Component {
   }
 
   getIslandCountries(countryList) {
-    // TODO: fact check, there could be countries with no bordering countries
-    // that are not fully surrounded by water.
-    return countryList.filter(country => country.borders.length === 0)
+    // NOTE: 53? not 80? http://www.funtrivia.com/askft/Question124008.html
+    return countryList.filter(country => 
+      // only get countries that have zero bordering countries and do have a capital
+      // eg, ignore countries that have multiple "territorial claims" such as Antarctica
+      country.borders.length === 0 && !!country.capital)
   }
 }
 
