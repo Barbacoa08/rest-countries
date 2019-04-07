@@ -1,0 +1,15 @@
+.app {
+  text-align: center;
+}
+
+.flex-row-container {
+  background: #aaa;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+}
+.flex-row-container > .flex-row-item {
+  flex-grow: 1;
+  flex: 1 1 50%;
+}
