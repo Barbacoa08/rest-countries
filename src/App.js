@@ -63,7 +63,15 @@ class App extends Component {
             {
               Header: 'Bordering Countries',
               accessor: 'borders',
-              Cell: data => `${data.original.name} has ${data.value.length} bordering countries`
+              Cell: data => data.value.join(', '),
+              style: { 'white-space': 'unset' }
+            },
+            {
+              Header: 'Bordering Countries Count',
+              accessor: 'borders',
+              // OPTIMIZATION: for network calls and memory usage. I could make calls here to get the full country name, or have it stored, but both seem like excessive options.
+              Cell: data => `${data.original.name} has ${data.value.length} bordering countries`,
+              style: { 'white-space': 'unset' }
             },
           ]}
         />
@@ -73,6 +81,11 @@ class App extends Component {
       result = (<div>
         <h2>{country.name}</h2>
         <div className='flex-row-container'>
+          <div className='flex-row-item'>Bordering Countries</div>
+
+          {/* OPTIMIZATION: for network calls and memory usage. I could make calls here to get the full country name, or have it stored, but both seem like excessive options. */}
+          <div className='flex-row-item'>{country.borders.join(', ')}</div>
+
           <div className='flex-row-item'>Capital</div>
           <div className='flex-row-item'>{country.capital}</div>
 
