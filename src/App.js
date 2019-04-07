@@ -12,12 +12,17 @@ class App extends Component {
     super()
     this.state = {
       countriesCount: 0,
+
+      // OPTIMIZATION: favor speed, could optionally use a single object/list that 
+      // has if a country is one of or both an island country and bordering country
       islandCountries: [],
       countriesWithMostBorderingCountries: [],
     }
   }
 
   async componentDidMount() {
+    // OPTIMIZATION: make ONE network call to get all the data we need and crunch it before we show anything.
+    // I do not see any reason to do more than this single call ever. 
     const result = (await axios.get('https://restcountries.eu/rest/v2/all')).data
     this.setState({
       countriesCount: result.length,
@@ -124,6 +129,8 @@ class App extends Component {
   getMostBorderingCountries(countryList) {
     const borderingCountries = { 1: [] }
     let mostBorderingCountries = 1
+
+    // OPTIMIZATION: favor speed | speed: O(n), memory: O(2n) ~= O(n)
     countryList.forEach(country => {
       if (country.borders.length > mostBorderingCountries) {
         mostBorderingCountries = country.borders.length
@@ -139,7 +146,7 @@ class App extends Component {
   }
 
   getIslandCountries(countryList) {
-    // NOTE: 53? not 80? http://www.funtrivia.com/askft/Question124008.html
+    // POSSIBLE BUG: 53? not 80? http://www.funtrivia.com/askft/Question124008.html
     return countryList.filter(country =>
       // only get countries that have zero bordering countries and do have a capital
       // eg, ignore countries that have multiple 'territorial claims' such as Antarctica
