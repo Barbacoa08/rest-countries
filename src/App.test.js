@@ -8,11 +8,11 @@ it('renders without crashing', () => {
   ReactDOM.unmountComponentAtNode(div)
 })
 
-it('handles call getCountriesWithMostBorderingCountries with zero countries passed', () => {
+it('handles call getMostBorderingCountries with zero countries passed', () => {
   // TODO
 })
 
-it('handles call getCountriesWithMostBorderingCountries with many countries passed', () => {
+it('handles call getMostBorderingCountries with many countries passed', () => {
   // TODO
 })
 

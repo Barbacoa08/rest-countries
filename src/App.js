@@ -22,59 +22,106 @@ class App extends Component {
     this.setState({
       countriesCount: result.length,
       islandCountries: this.getIslandCountries(result),
-      countriesWithMostBorderingCountries: this.getCountriesWithMostBorderingCountries(result),
+      countriesWithMostBorderingCountries: this.getMostBorderingCountries(result),
     })
   }
 
   render() {
-    const {
-      countriesCount,
-      islandCountries,
-      countriesWithMostBorderingCountries,
-    } = this.state
+    const { countriesCount } = this.state
 
-    // NOTE: assuming zero down time of service
     return (
-      <div className='App'>
+      <div className='app'>
         <h1>
           Countries count: {countriesCount}
         </h1>
 
-        <Tabs>
-          <TabList>
-            <Tab>Countries that are islands count: {islandCountries.length}</Tab>
-            <Tab>Countr{countriesWithMostBorderingCountries.length === 1 ? 'y' : 'ies'} with the most bordering countries count: {countriesWithMostBorderingCountries.length}</Tab>
-          </TabList>
-
-          <TabPanel>
-            <ReactTable
-              data={islandCountries}
-              columns={[
-                { Header: 'Name', accessor: 'name' },
-                { Header: 'Capital', accessor: 'capital' },
-                { Header: 'Population', accessor: 'population' },
-                { Header: 'Notes', accessor: 'languages', Cell: this.getLanguageText, minWidth: 200 }
-              ]}
-            />
-          </TabPanel>
-
-          <TabPanel>
-            <ReactTable
-              data={countriesWithMostBorderingCountries}
-              columns={[
-                { Header: 'Name', accessor: 'name' },
-                { Header: 'Capital', accessor: 'capital' },
-                { Header: 'Population', accessor: 'population' },
-              ]}
-            />
-          </TabPanel>
-        </Tabs>
+        {this.displayTabs()}
       </div>
     )
   }
 
-  // TODO: getBorderingCountries and make a table that shows key(border countries count)-value(bordering country names)
-  getCountriesWithMostBorderingCountries(countryList) {
+  displayBorderingCountriesData() {
+    const { countriesWithMostBorderingCountries } = this.state
+
+    let result = null
+    if (countriesWithMostBorderingCountries.length > 1) {
+      result = (<div>
+        <h2>
+          {countriesWithMostBorderingCountries.map(country => country.name).join(', ')}
+        </h2>
+        <ReactTable
+          data={countriesWithMostBorderingCountries}
+          columns={[
+            { Header: 'Name', accessor: 'name' },
+            { Header: 'Capital', accessor: 'capital' },
+            { Header: 'Population', accessor: 'population' },
+            {
+              Header: 'Bordering Countries',
+              accessor: 'borders',
+              Cell: data => `${data.original.name} has ${data.value.length} bordering countries`
+            },
+          ]}
+        />
+      </div>)
+    } else if (countriesWithMostBorderingCountries.length === 1) {
+      const country = countriesWithMostBorderingCountries[0]
+      result = (<div>
+        <h2>{country.name}</h2>
+        <div className='flex-row-container'>
+          <div className='flex-row-item'>Capital</div>
+          <div className='flex-row-item'>{country.capital}</div>
+
+          <div className='flex-row-item'>Population</div>
+          <div className='flex-row-item'>{country.population}</div>
+
+          <div className='flex-row-item'>Languages</div>
+          <div className='flex-row-item'>{this.getLanguageText(country.languages)}</div>
+        </div>
+      </div>)
+    } else {
+      result = (<h2>No data</h2>)
+    }
+    return result
+  }
+
+  displayTabs() {
+    const {
+      countriesCount,
+      countriesWithMostBorderingCountries,
+      islandCountries,
+    } = this.state
+
+    const borderingCountriesTabText = countriesWithMostBorderingCountries.length === 1
+      ? `Country with the most bordering countries: ${countriesWithMostBorderingCountries[0].name}`
+      : 'Tied between multiple, click for details'
+
+    return countriesCount < 1
+      ? (<div>No data available</div>)
+      : (<Tabs>
+        <TabList>
+          <Tab>Countries that are islands count: {islandCountries.length}</Tab>
+          <Tab>{borderingCountriesTabText}</Tab>
+        </TabList>
+
+        <TabPanel>
+          <ReactTable
+            data={islandCountries}
+            columns={[
+              { Header: 'Name', accessor: 'name' },
+              { Header: 'Capital', accessor: 'capital' },
+              { Header: 'Population', accessor: 'population' },
+              { Header: 'Notes', accessor: 'languages', Cell: this.getLanguageText, minWidth: 200 }
+            ]}
+          />
+        </TabPanel>
+
+        <TabPanel>
+          {this.displayBorderingCountriesData()}
+        </TabPanel>
+      </Tabs>)
+  }
+
+  getMostBorderingCountries(countryList) {
     const borderingCountries = { 1: [] }
     let mostBorderingCountries = 1
     countryList.forEach(country => {
@@ -87,6 +134,7 @@ class App extends Component {
       }
     })
 
+    // TEST, for multiple countries with most bordering countries: borderingCountries[mostBorderingCountries].push(countryList[0])
     return borderingCountries[mostBorderingCountries]
   }
 
