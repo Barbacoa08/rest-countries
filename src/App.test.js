@@ -23,3 +23,11 @@ it('handles call getIslandCountries with zero countries passed', () => {
 it('handles call getIslandCountries with many countries passed', () => {
   // TODO
 })
+
+it('handles call getLanguageText with good data passed', () => {
+  // TODO
+})
+
+it('handles call getLanguageText with bad data passed', () => {
+  // TODO
+})

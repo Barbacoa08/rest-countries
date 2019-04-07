@@ -1,6 +1,11 @@
 import React, { Component } from 'react'
-import './App.css'
+import ReactTable from 'react-table'
+import { Tab, Tabs, TabList, TabPanel } from 'react-tabs'
+import 'react-table/react-table.css'
 import axios from 'axios'
+import 'react-tabs/style/react-tabs.css'
+
+import './App.css'
 
 class App extends Component {
   constructor() {
@@ -30,45 +35,45 @@ class App extends Component {
 
     // NOTE: assuming zero down time of service
     return (
-      <div className="App">
-        <div>
+      <div className='App'>
+        <h1>
           Countries count: {countriesCount}
-        </div>
-        <div>
-          Countries that are islands count: {islandCountries.length}
-          <div>{this.displayIslandCountryNames()}</div>
-        </div>
-        <div>
-          <p>Countr{countriesWithMostBorderingCountries.length === 1 ? 'y' : 'ies'} with the most bordering countries count: {countriesWithMostBorderingCountries.length}</p>
-          <div>{this.displayMostBorderingCountriesNames()}</div>
-        </div>
+        </h1>
+
+        <Tabs>
+          <TabList>
+            <Tab>Countries that are islands count: {islandCountries.length}</Tab>
+            <Tab>Countr{countriesWithMostBorderingCountries.length === 1 ? 'y' : 'ies'} with the most bordering countries count: {countriesWithMostBorderingCountries.length}</Tab>
+          </TabList>
+
+          <TabPanel>
+            <ReactTable
+              data={islandCountries}
+              columns={[
+                { Header: 'Name', accessor: 'name' },
+                { Header: 'Capital', accessor: 'capital' },
+                { Header: 'Population', accessor: 'population' },
+                { Header: 'Notes', accessor: 'languages', Cell: this.getLanguageText, minWidth: 200 }
+              ]}
+            />
+          </TabPanel>
+
+          <TabPanel>
+            <ReactTable
+              data={countriesWithMostBorderingCountries}
+              columns={[
+                { Header: 'Name', accessor: 'name' },
+                { Header: 'Capital', accessor: 'capital' },
+                { Header: 'Population', accessor: 'population' },
+              ]}
+            />
+          </TabPanel>
+        </Tabs>
       </div>
     )
   }
 
-  // TODO: get a react table so we can pretty-print the names with the interesting info.
-  displayIslandCountryNames() {
-    const liArray = []
-    this.state.islandCountries.forEach((country, index) =>
-      liArray.push(<li key={`island-country-${index}`}>{country.name}</li>)
-    )
-    return (
-      <ul>{liArray}</ul>
-    )
-  }
-
-  // TODO: get a react table so we can pretty-print the names with the interesting info.
-  displayMostBorderingCountriesNames() {
-    const liArray = []
-    this.state.countriesWithMostBorderingCountries.forEach((country, index) =>
-      liArray.push(<li key={`bordering-country-${index}`}>{country.name}</li>)
-    )
-    return (
-      <ul>{liArray}</ul>
-    )
-  }
-
-  // TODO: runner up? table of one is kinda boring...
+  // TODO: getBorderingCountries and make a table that shows key(border countries count)-value(bordering country names)
   getCountriesWithMostBorderingCountries(countryList) {
     const borderingCountries = { 1: [] }
     let mostBorderingCountries = 1
@@ -87,10 +92,26 @@ class App extends Component {
 
   getIslandCountries(countryList) {
     // NOTE: 53? not 80? http://www.funtrivia.com/askft/Question124008.html
-    return countryList.filter(country => 
+    return countryList.filter(country =>
       // only get countries that have zero bordering countries and do have a capital
-      // eg, ignore countries that have multiple "territorial claims" such as Antarctica
+      // eg, ignore countries that have multiple 'territorial claims' such as Antarctica
       country.borders.length === 0 && !!country.capital)
+  }
+
+  getLanguageText(data) {
+    let result = 'Whoops, there was an error'
+    if (!data || !data.value || !data.value.length) return result
+
+    if (data.value.length < 1) {
+      result = 'How this country gets by without any languages is just strange...'
+    } else if (data.value.length === 1) {
+      result = `This countries primary language is ${data.value[0].name}.`
+    } else if (data.value.length < 4) {
+      result = `This country boasts ${data.value.length} primary languages.`
+    } else {
+      result = `${data.original.name} has ${data.value.length} primary languages!?`
+    }
+    return result
   }
 }
 
